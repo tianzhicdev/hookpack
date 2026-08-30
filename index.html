@@ -236,11 +236,16 @@
       hookpack's own files.</p>
 
       <h3>Can I verify a hookpack release wasn't tampered with?</h3>
-      <p>Yes. Every tagged release publishes a
-      <code>&lt;tag&gt;.sig.txt</code> asset: the maintainer's EIP-191
-      signature over the SHA-256 of <code>hookpack.py</code>, recoverable to
-      <code>0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15</code>. Check the hash of
-      the file you downloaded against the signed message before you run it.</p>
+      <p>Yes. Every release attaches a self-contained signed receipt,
+      <code>hookpack-&lt;tag&gt;-proof.md</code>, with the exact release file
+      embedded. One command proves it:
+      <code>python3 ethkey.py verify hookpack-&lt;tag&gt;-proof.md --require
+      0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15</code> exits 0 only if the
+      payload hash, the EIP-191 signature, and the signer all check out — or
+      paste the receipt into the
+      <a href="https://tianzhicdev.github.io/ethkey-lite/receipt.html">browser verifier</a>.
+      The legacy <code>&lt;tag&gt;.sig.txt</code> asset is still attached for
+      compatibility.</p>
     </div>
 
     <h2>Ecosystem</h2>
