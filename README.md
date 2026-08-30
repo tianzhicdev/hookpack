@@ -90,7 +90,7 @@ python3 ethkey.py verify hookpack-<tag>-proof.md \
 ```
 
 Or paste the receipt into the
-[browser verifier](https://tianzhicdev.github.io/ethkey-lite/receipt.html?require=0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15)
+[browser verifier](https://tianzhicdev.github.io/ethkey-lite/receipt.html?require=0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15) <!-- secretgate: allow public tip addr -->
 — the link pre-fills the maintainer address above, so it's paste + go.
 The legacy flat `<tag>.sig.txt` asset (signature over the SHA-256, recover
 with `ethkey.py recover`) is still attached for compatibility.
