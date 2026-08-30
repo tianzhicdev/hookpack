@@ -1,0 +1,5 @@
+message: hookpack v1.1.0 hookpack.py sha256=a49992a8aac4d8aa45201b85342ca4616383727a8fa552266247146fb65edb03
+address: 0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15
+signed-with: ethkey-lite (EIP-191 personal_sign)
+verify: python3 ethkey.py recover <address> "<message>" "<sig>"
+0xcb0865f7e9eeb38ad54ad0a2fb635a6da514346f09f427e8475f49efda4ab1687420e5810b12e52c113a175adf969e43676c03cf1426fc2f79b5b9876a5d1b031c
