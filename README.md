@@ -74,6 +74,20 @@ hookpack --work-dir ~/code/myrepo add trimtrail
 python3 -m unittest -v test_hookpack
 ```
 
+## Release signatures
+
+Each release publishes a `<tag>.sig.txt` asset: the maintainer's EIP-191
+(`personal_sign`) signature over the SHA-256 of `hookpack.py` at that tag,
+recoverable to `0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15`. Verify before
+you curl-and-run:
+
+```sh
+sha256sum hookpack.py            # must match the hash in the signed message
+# recover the signer with any personal_sign tool, e.g. ethkey-lite:
+python3 ethkey.py recover 0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15 \
+  "hookpack v1.1.0 hookpack.py sha256=<hash>" "<signature>"
+```
+
 ## Ecosystem
 
 Part of a small family of zero-dependency tip-jar tools:
