@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hookpack — zero-dependency git hooks manager</title>
+<meta name="description" content="hookpack: a zero-dependency git hooks manager. One Python file, stdlib only. Managed-marker dispatchers, never touches hooks it did not create.">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --dim: #8b949e;
+    --accent: #7ee787;
+    --accent2: #79c0ff;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  code, pre { font-family: var(--mono); }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* hero */
+  header.hero { padding: 96px 0 72px; text-align: center; border-bottom: 1px solid var(--border); }
+  .logo {
+    font-family: var(--mono);
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+  .logo .hash { color: var(--accent); }
+  .tagline { color: var(--dim); margin-top: 12px; font-size: 1.15rem; }
+  .tagline strong { color: var(--text); font-weight: 600; }
+  .install {
+    margin: 36px auto 0;
+    display: inline-block;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 22px;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-align: left;
+    word-break: break-all;
+  }
+  .install .prompt { color: var(--dim); user-select: none; }
+  .badges { margin-top: 20px; font-family: var(--mono); font-size: 0.8rem; color: var(--dim); }
+  .badges span { border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px; margin: 0 4px; }
+
+  /* sections */
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section h2 {
+    font-family: var(--mono);
+    font-size: 1.35rem;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  section h2::before { content: "## "; color: var(--accent); }
+  section p { color: var(--dim); margin-bottom: 14px; }
+  section p strong { color: var(--text); }
+
+  pre.block {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    margin: 14px 0 22px;
+    color: var(--text);
+  }
+  pre.block .c { color: var(--dim); }
+  pre.block .g { color: var(--accent); }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 8px; font-size: 0.92rem; }
+  th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; vertical-align: top; }
+  th { background: var(--bg-alt); font-family: var(--mono); font-weight: 600; font-size: 0.85rem; color: var(--dim); }
+  td { color: var(--dim); }
+  td code, p code, li code {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+  td:first-child { white-space: nowrap; }
+
+  /* how it works */
+  ul.how { list-style: none; }
+  ul.how li {
+    padding: 0 0 18px 32px;
+    position: relative;
+    color: var(--dim);
+  }
+  ul.how li::before {
+    content: "›";
+    position: absolute;
+    left: 8px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  ul.how li strong { color: var(--text); }
+
+  /* ecosystem cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
+  .card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .card h3 { font-family: var(--mono); font-size: 1rem; margin-bottom: 6px; }
+  .card h3 a { color: var(--accent); }
+  .card p { font-size: 0.875rem; margin: 0; color: var(--dim); }
+
+  /* footer */
+  footer { padding: 48px 0 64px; text-align: center; color: var(--dim); font-size: 0.875rem; }
+  footer .tip {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    word-break: break-all;
+    color: var(--dim);
+  }
+  footer .tip .addr { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="logo"><span class="hash">$</span> hookpack</div>
+    <p class="tagline">A <strong>zero-dependency git hooks manager</strong>. One Python file, stdlib only.</p>
+    <div class="install"><span class="prompt">$</span> curl -LO https://raw.githubusercontent.com/tianzhicdev/hookpack/main/hookpack.py</div>
+    <div class="badges"><span>Python 3.9+</span><span>stdlib only</span><span>MIT</span></div>
+  </div>
+</header>
+
+<section id="quickstart">
+  <div class="wrap">
+    <h2>Quick start</h2>
+    <p>Copy <code>hookpack.py</code> somewhere on your PATH (or run it directly), then install hooks into a repository:</p>
+    <pre class="block"><span class="c"># install the secret scanner and whitespace trimmer (both pre-commit)</span>
+<span class="g">$</span> hookpack add secretscan
+<span class="g">$</span> hookpack add trimtrail</pre>
+    <p>Pass <code>--work-dir DIR</code> before the subcommand to target another repository:</p>
+    <pre class="block"><span class="g">$</span> hookpack --work-dir ~/code/myrepo add trimtrail</pre>
+    <p>All commands:</p>
+    <table>
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>hookpack add NAME</code></td><td>Install a hook into the current repo</td></tr>
+      <tr><td><code>hookpack remove NAME</code></td><td>Remove an installed hook</td></tr>
+      <tr><td><code>hookpack list</code></td><td>List available and installed hooks</td></tr>
+      <tr><td><code>hookpack doctor</code></td><td>Verify managed hooks, print hook dir, check PATH</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="hooks">
+  <div class="wrap">
+    <h2>Available hooks</h2>
+    <table>
+      <tr><th>Hook</th><th>Event</th><th>What it does</th></tr>
+      <tr>
+        <td><code>secretscan</code></td>
+        <td>pre-commit</td>
+        <td>Runs the <a href="https://github.com/tianzhicdev/secretgate">secretgate</a> scanner (<code>python3 secretgate.py scan .</code>). Uses a local <code>secretgate.py</code> at the repo root if present, otherwise downloads the pinned copy to <code>.git/hookpack/cache/</code>. If neither works (e.g. no network), it prints a notice and skips gracefully instead of blocking your commit.</td>
+      </tr>
+      <tr>
+        <td><code>trimtrail</code></td>
+        <td>pre-commit</td>
+        <td>Strips trailing whitespace from staged text files (binary files are detected via <code>grep -I</code> and skipped), then re-stages the fixed files.</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <ul class="how">
+      <li><strong>Managed markers, never destructive.</strong> Every file hookpack manages carries a <code># hookpack:managed</code> marker. Any pre-existing hook without that marker is refused with a clear error (exit 1) — hookpack never touches a hook file it did not create.</li>
+      <li><strong>Script per hook, one dispatcher per event.</strong> Each installed hook lives as an executable bash script at <code>.git/hookpack/&lt;name&gt;.hook</code>; a single dispatcher is generated at <code>.git/hooks/&lt;event&gt;</code> (e.g. <code>.git/hooks/pre-commit</code>) and runs every managed hook for that event — any hook exiting non-zero fails the commit (the last non-zero status wins).</li>
+      <li><strong>Clean removal &amp; worktree support.</strong> <code>hookpack remove</code> deletes the hook file and regenerates dispatchers (a dispatcher with no remaining managed hooks is deleted too), and linked git worktrees are supported — the shared <code>git-dir</code> hooks directory is resolved via <code>git rev-parse --git-path hooks</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="ecosystem">
+  <div class="wrap">
+    <h2>Ecosystem</h2>
+    <p>hookpack is part of a small family of curl-and-run tools:</p>
+    <div class="cards">
+      <div class="card">
+        <h3><a href="https://github.com/tianzhicdev/secretgate">secretgate</a></h3>
+        <p>Zero-dependency, curl-and-run secret scanner. Powers the <code>secretscan</code> hook.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/tianzhicdev/secretgate-action">secretgate-action</a></h3>
+        <p>GitHub Action wrapper that runs secretgate checks in CI.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://tianzhicdev.github.io/ethkey-lite/verify.html">ethkey-lite</a></h3>
+        <p>Lightweight crypto signing tool — try the live verification demo page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>MIT — see <a href="https://github.com/tianzhicdev/hookpack/blob/main/LICENSE">LICENSE</a>.</p>
+    <p>Source: <a href="https://github.com/tianzhicdev/hookpack">github.com/tianzhicdev/hookpack</a></p>
+    <p class="tip">If it saves you a messy commit, tips: <span class="addr">0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15</span> (ETH)</p>
+  </div>
+</footer>
+
+</body>
+</html>

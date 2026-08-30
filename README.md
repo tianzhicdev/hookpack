@@ -74,6 +74,14 @@ hookpack --work-dir ~/code/myrepo add trimtrail
 python3 -m unittest -v test_hookpack
 ```
 
+## Ecosystem
+
+Part of a small family of zero-dependency tip-jar tools:
+
+- [secretgate](https://github.com/tianzhicdev/secretgate) — the secret scanner used by hookpack's `secretscan` hook.
+- [secretgate-action](https://github.com/tianzhicdev/secretgate-action) — run secretgate as a one-line GitHub Action instead of a local hook.
+- [ethkey-lite](https://github.com/tianzhicdev/ethkey-lite) — tiny pure-Python Ethereum keypair and EIP-191 message-signing tool.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
