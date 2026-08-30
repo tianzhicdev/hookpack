@@ -76,17 +76,23 @@ python3 -m unittest -v test_hookpack
 
 ## Release signatures
 
-Each release publishes a `<tag>.sig.txt` asset: the maintainer's EIP-191
-(`personal_sign`) signature over the SHA-256 of `hookpack.py` at that tag,
-recoverable to `0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15`. Verify before
-you curl-and-run:
+Every release attaches a self-contained signed receipt,
+`hookpack-<tag>-proof.md`: an [ethkey-lite](https://github.com/tianzhicdev/ethkey-lite)
+proof with the pinned `hookpack.py` embedded (base64), signed via EIP-191
+(`personal_sign`) by the maintainer key. One command verifies the download
+came from this repo's maintainer — signature, payload hash, and signer in one
+exit code:
 
 ```sh
-sha256sum hookpack.py            # must match the hash in the signed message
-# recover the signer with any personal_sign tool, e.g. ethkey-lite:
-python3 ethkey.py recover 0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15 \
-  "hookpack v1.1.0 hookpack.py sha256=<hash>" "<signature>"
+# download hookpack-<tag>-proof.md from the release page, then:
+python3 ethkey.py verify hookpack-<tag>-proof.md \
+  --require 0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15   # exit 0 == authentic
 ```
+
+Or paste the receipt into the
+[browser verifier](https://tianzhicdev.github.io/ethkey-lite/receipt.html).
+The legacy flat `<tag>.sig.txt` asset (signature over the SHA-256, recover
+with `ethkey.py recover`) is still attached for compatibility.
 
 ## Ecosystem
 
