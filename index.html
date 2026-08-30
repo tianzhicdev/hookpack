@@ -203,6 +203,46 @@
 
 <section id="ecosystem">
   <div class="wrap">
+    <h2>Common questions</h2>
+    <div class="faq">
+      <h3>What is a zero dependency git hooks manager?</h3>
+      <p>A zero dependency git hooks manager installs and runs git hooks
+      (pre-commit, pre-push, commit-msg) without a package ecosystem. hookpack
+      is a single Python file using only the standard library — no Node, no
+      virtualenv, no <code>pip install</code>, no <code>.pre-commit-config.yaml</code>.
+      If the machine has Python 3, it works.</p>
+
+      <h3>How is hookpack different from pre-commit?</h3>
+      <p><code>pre-commit</code> is excellent but pulls in a Python package, a
+      per-repo virtualenv cache, and a config schema that assumes network
+      access to resolve hook repositories. hookpack assumes nothing: each hook
+      is one small script, dispatchers are written into
+      <code>.git/hooks/</code> between managed markers, and removing hookpack
+      cleanly removes only what it added. For air-gapped CI, minimal containers,
+      and "I just want a pre-commit secret scan" repos, it is the lighter path.</p>
+
+      <h3>How do I run a secret scan on pre-commit without installing anything?</h3>
+      <p>Use hookpack's <code>secretscan</code> hook: it fetches the
+      single-file <a href="https://github.com/tianzhicdev/secretgate">secretgate</a>
+      scanner with curl at run time and blocks commits containing API keys,
+      tokens, or private keys. No scanner needs to be installed —
+      <code>python3 hookpack.py add secretscan</code> is the whole setup.</p>
+
+      <h3>Does hookpack touch or overwrite my existing git hooks?</h3>
+      <p>No. Every file hookpack manages carries a <code># hookpack:managed</code>
+      marker, and hookpack refuses — with an error, before writing anything —
+      to modify any hook file that lacks that marker. Your hand-written hooks
+      are never overwritten, and <code>hookpack remove</code> deletes only
+      hookpack's own files.</p>
+
+      <h3>Can I verify a hookpack release wasn't tampered with?</h3>
+      <p>Yes. Every tagged release publishes a
+      <code>&lt;tag&gt;.sig.txt</code> asset: the maintainer's EIP-191
+      signature over the SHA-256 of <code>hookpack.py</code>, recoverable to
+      <code>0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15</code>. Check the hash of
+      the file you downloaded against the signed message before you run it.</p>
+    </div>
+
     <h2>Ecosystem</h2>
     <p>hookpack is part of a small family of curl-and-run tools:</p>
     <div class="cards">
