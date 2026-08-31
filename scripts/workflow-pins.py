@@ -48,12 +48,12 @@ import sys
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 # c113 doc-pins leg: a `uses:` value on one line of a fenced snippet.
 USES_VALUE_RE = re.compile(r"(?:^|\s)(?:-\s+)*uses:\s*(\S+)")
-# c113 port NOTE (hookpack): this repo's README has NO fenced uses: today
-# (measured c113: grep-c 0), so the vacuity floor is documented as ZERO here —
-# but the per-line JUDGEMENT stays live: any fenced uses: ADDED later must be
-# content-addressed, and the moment one lands EXPECT_FENCED_USES_MIN must go
-# to 1 so the leg can never go silently blind again.
-EXPECT_FENCED_USES_MIN = 0  # secretgate & secretgate-action use 1
+# c113 port NOTE (hookpack): MEASURED geometry of THIS repo = exactly ONE
+# fenced uses: (README verify-release snippet). SELF-CATCH at ship: the ported
+# comment initially claimed ZERO (my pre-edit grep counted checkout@ only =
+# checkout-specific, not fence-scoped). Floor = measured 1, so the leg can
+# never go silently blind (c27 vacuous-green class).
+EXPECT_FENCED_USES_MIN = 1  # secretgate 2, secretgate-action 4, hookpack 1
 OWN_REPO = "tianzhicdev/secretgate-action"
 SECRETGATE_ACTION = "tianzhicdev/secretgate-action"
 # c36: YAML keys may be QUOTED ("uses": x, 'jobs': {…}) — GitHub's parser
