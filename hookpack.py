@@ -104,6 +104,9 @@ class ToolError(Exception):
     """Fatal, user-facing error. Exits with code 1."""
 
 
+GIT_TIMEOUT = 60
+
+
 def die(msg: str) -> None:
     print(f"{TOOL_NAME}: error: {msg}", file=sys.stderr)
     sys.exit(1)
@@ -118,9 +121,13 @@ def git_dir(work_dir: Path) -> Path:
             ["git", "-C", str(work_dir), "rev-parse", "--absolute-git-dir"],
             capture_output=True,
             text=True,
+            timeout=GIT_TIMEOUT,
         )
     except FileNotFoundError:
         raise ToolError("git not found on PATH")
+    except subprocess.TimeoutExpired:
+        raise ToolError(f"git rev-parse did not return in {GIT_TIMEOUT}s "
+                        "(wedged git? refusing to install/inspect hooks)")
     if r.returncode != 0:
         raise ToolError(f"not a git repository: {work_dir}")
     return Path(r.stdout.strip())
@@ -128,11 +135,16 @@ def git_dir(work_dir: Path) -> Path:
 
 def hooks_dir(gd: Path, work_dir: Path) -> Path:
     """Resolve the hooks directory via `git rev-parse --git-path hooks`."""
-    r = subprocess.run(
-        ["git", "-C", str(work_dir), "rev-parse", "--git-path", "hooks"],
-        capture_output=True,
-        text=True,
-    )
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(work_dir), "rev-parse", "--git-path", "hooks"],
+            capture_output=True,
+            text=True,
+            timeout=GIT_TIMEOUT,
+        )
+    except subprocess.TimeoutExpired:
+        raise ToolError(f"git rev-parse did not return in {GIT_TIMEOUT}s "
+                        "(wedged git? refusing to install/inspect hooks)")
     if r.returncode != 0:
         raise ToolError("could not resolve git hooks path")
     p = Path(r.stdout.strip())
@@ -316,7 +328,8 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         print("  (hooks dir does not exist yet)")
     for tool in ("git", "python3", "curl", "sed", "grep"):
         found = subprocess.run(["sh", "-c", f"command -v {tool}"],
-                               capture_output=True, text=True).stdout.strip()
+                               capture_output=True, text=True,
+                               timeout=10).stdout.strip()
         print(f"PATH: {tool}: {found if found else 'NOT FOUND'}")
     if issues:
         print(f"doctor: {issues} issue(s) found")
