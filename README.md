@@ -1,11 +1,15 @@
 # hookpack
 
-A zero-dependency git hooks manager. One Python file, stdlib only.
+A zero-dependency git hooks manager: install and manage pre-commit hooks (and
+post-commit, pre-push, commit-msg) from one declarative Python file, stdlib
+only.
 
 hookpack installs declarative hooks into a repository and never touches a hook
 file it did not create: every file it manages carries a `# hookpack:managed`
 marker, and any pre-existing hook without that marker is refused with a clear
-error.
+error. Comes with a built-in `secretscan` hook that runs
+[secretgate](https://github.com/tianzhicdev/secretgate) to stop secrets before
+they are committed.
 
 ## Requirements
 
