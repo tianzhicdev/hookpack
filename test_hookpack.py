@@ -109,6 +109,26 @@ class TestAddAndDispatch(HookpackTestCase):
         self.assertNotEqual(r.returncode, 0)
         self.git("log", "--oneline", check=128)  # no commits exist
 
+    def test_failing_hook_not_masked_by_later_pass(self):
+        # A c80 rc-swallow audit: dispatcher runs *.hook in sorted order and
+        # accumulates via `|| status=$?` — a LATER passing hook must never
+        # overwrite an EARLIER failing rc (fail-first sorts before pass-after).
+        hkdir = self.gitdir / "hookpack"
+        hkdir.mkdir(parents=True)
+        (hkdir / "fail-first.hook").write_text(
+            "#!/usr/bin/env bash\n# hookpack:managed\nexit 7\n")
+        (hkdir / "pass-after.hook").write_text(
+            "#!/usr/bin/env bash\n# hookpack:managed\ntrue\n")
+        for h in ("fail-first.hook", "pass-after.hook"):
+            (hkdir / h).chmod(0o755)
+        self.hp("add", "trimtrail", check=0)
+        (self.repo / "f.txt").write_text("hello\n")
+        self.git("add", "f.txt")
+        r = self.git("commit", "-m", "x", check=None)
+        self.assertNotEqual(r.returncode, 0,
+                            "later passing hook masked an earlier failure")
+        self.git("log", "--oneline", check=128)  # no commits exist
+
     def test_add_secretscan(self):
         self.hp("add", "secretscan", check=0)
         hk = (self.gitdir / "hookpack" / "secretscan.hook").read_text()
