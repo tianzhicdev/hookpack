@@ -21,7 +21,11 @@ jobs:
   verify:
     uses: tianzhicdev/ethkey-lite/.github/workflows/verify-release.yml@2faab7ce4063c3e74190a6d33b9d0f9af7a66586  # v1.1 tag commit (A c108; v1.0 5ee65d9 @ A c106)
     with:
-      receipt: "proofs/hookpack-v1.1.0-proof.md"
+      # A c111: gate follows the LATEST release receipt (v1.2.0, c109). The old
+      # v1.1.0 gen stays pinned in the X1 empty --require rows below as a
+      # regression pin (v1.1.0 bytes a49992a8, v1.2.0 bytes 03ab5fd2 — both
+      # measured verify rc=0 with the v1.1-pinned tool this cycle).
+      receipt: "proofs/hookpack-v1.2.0-proof.md"
       require: "0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15"
       ethkey-ref: "v1.1"
 
@@ -116,8 +120,10 @@ jobs:
           expect !exit "T3 throwaway fixture --require true signer must PASS" \
             $EK verify proofs/c21-throwaway-signed-fixture.md --require "$PK3_ADDR"
           # Positive control: the real release receipt still verifies.
-          expect !exit "P1 real v1.1.0 receipt --require A must PASS" \
-            $EK verify proofs/hookpack-v1.1.0-proof.md --require "$A_ADDR"
+          # A c111: follows latest gen (v1.2.0); X1 below keeps v1.1.0 pinned
+          # as the older-gen regression witness.
+          expect !exit "P1 real v1.2.0 receipt --require A must PASS" \
+            $EK verify proofs/hookpack-v1.2.0-proof.md --require "$A_ADDR"
           # A c106 (my c105 find, C's v1.0 fix): empty --require must REFUSE
           # at the args layer, never bless. Pinned forever = regression teeth.
           expect exit "X1 empty --require must REFUSE (exit 2, v1.0+)" \
