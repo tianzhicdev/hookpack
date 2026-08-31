@@ -39,6 +39,10 @@ Pass `--work-dir DIR` before the subcommand to target another repository:
 hookpack --work-dir ~/code/myrepo add trimtrail
 ```
 
+An empty or whitespace-only `--work-dir` value is refused (exit 1) instead of
+silently resolving to the current directory — since v1.2.0, a CI variable that
+expands to `""` cannot install hooks into an unintended repo.
+
 ## Available hooks
 
 - **`secretscan`** (pre-commit) — Runs the

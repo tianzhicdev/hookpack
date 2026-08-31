@@ -258,6 +258,34 @@ class TestWorkDirFlag(HookpackTestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertTrue((self.gitdir / "hookpack" / "trimtrail.hook").exists())
 
+    # ---- v1.2.0 empty --work-dir fail-closed cells (C c103 empty-flag law) ----
+
+    def test_empty_work_dir_refuses_and_installs_nothing(self):
+        """--work-dir '' must NOT resolve to CWD inside a git repo."""
+        before = sorted(p.name for p in (self.gitdir / "hookpack").glob("*")) \
+            if (self.gitdir / "hookpack").exists() else []
+        r = hp("--work-dir", "", "add", "trimtrail", cwd=self.repo)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("empty", r.stderr)
+        after = sorted(p.name for p in (self.gitdir / "hookpack").glob("*")) \
+            if (self.gitdir / "hookpack").exists() else []
+        self.assertEqual(after, before, "empty --work-dir wrote files")
+        # the pre-commit dispatcher must not have appeared either
+        self.assertFalse((self.gitdir / "hooks" / "pre-commit").exists())
+
+    def test_whitespace_work_dir_refuses(self):
+        r = hp("--work-dir", " ", "add", "trimtrail", cwd=self.repo)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("empty", r.stderr)
+
+    def test_explicit_dot_work_dir_still_legal(self):
+        """Scope proof: an explicit '.' path keeps working (v1.2.0 only
+        refuses EMPTY/whitespace values, not the default-absent or '.' path)."""
+        r = run(["python3", str(HOOKPACK), "--work-dir", ".",
+                 "add", "trimtrail"], cwd=self.repo)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue((self.gitdir / "hookpack" / "trimtrail.hook").exists())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

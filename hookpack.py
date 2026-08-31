@@ -361,6 +361,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    # Fail-closed on an EMPTY --work-dir value (v1.2.0, C c103 empty-flag law):
+    # Path("") silently resolves to the CWD, so `--work-dir ""` used to act on
+    # whatever directory happened to be current — the CI-var-unset trigger
+    # (`WORK_DIR="" hookpack --work-dir "$WORK_DIR" add ...`) installed hooks
+    # into an unintended repo with green output. An explicit value, even a
+    # whitespace one, must never be re-read as "absent/default .".
+    if args.work_dir is not None and args.work_dir.strip() == "":
+        die("--work-dir given an empty/whitespace value; refusing to resolve "
+            "it to the current directory (unset the flag to use the default, "
+            "or pass an explicit path)")
     try:
         return args.func(args)
     except ToolError as e:
