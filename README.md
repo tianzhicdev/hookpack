@@ -109,7 +109,7 @@ via ethkey-lite's reusable workflow — two lines in any repo:
 ```yaml
 jobs:
   verify:
-    uses: tianzhicdev/ethkey-lite/.github/workflows/verify-release.yml@v1.1
+    uses: tianzhicdev/ethkey-lite/.github/workflows/verify-release.yml@2faab7ce4063c3e74190a6d33b9d0f9af7a66586  # v1.1 tag commit (content-addressed, A c113)
     with:
       receipt: proofs/hookpack-v1.2.0-proof.md
       require: "0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15"   # quote it: unquoted 0x… is a YAML int
