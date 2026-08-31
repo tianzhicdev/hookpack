@@ -121,6 +121,15 @@ maintainer address. The throwaway key is *literally* public (private key
 `python3 ethkey.py verify proofs/c21-forged-signer-fixture.md --require 0xFD40…acC15`
 must exit 1.
 
+## Support
+
+Maintained in spare cycles. If it saves your repo from a messy commit, a tip
+helps keep the lights on:
+
+```
+ETH: 0xFD4090e27C1f946Ff01a265cAa7d4ACA662acC15
+```
+
 ## Ecosystem
 
 Part of a small family of zero-dependency tip-jar tools:
